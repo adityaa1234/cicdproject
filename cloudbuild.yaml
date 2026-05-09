@@ -1,37 +1,18 @@
 steps:
-  # Step 1: Install dependencies in a virtual environment
-  - name: 'python:3.9'
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - |
-        python -m venv venv && \
-        . venv/bin/activate && \
-        pip install --upgrade pip && \
-        pip install -r app/requirements.txt
 
-  # Step 2: Run tests in the same environment
-  - name: 'python:3.9'
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - |
-        . venv/bin/activate && \
-        python -m unittest discover tests
+# Build image
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'build'
+    - '-t'
+    - 'us-central1-docker.pkg.dev/oval-turbine-495504-h2/mydockerregistry-aditya/python-app:$BUILD_ID'
+    - '.'
 
-  # Step 3: Build Docker image
-  - name: 'gcr.io/cloud-builders/docker'
-    args: 
-      - 'build'
-      - '-t'
-      - 'us-central1-docker.pkg.dev/oval-turbine-495504-h2/mydockerregistry-aditya:$BUILD_ID'
-      - '.'
-  # Step 4: Push Docker image to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args: 
-      - 'push'
-      - 'us-central1-docker.pkg.dev/oval-turbine-495504-h2/mydockerregistry-aditya:$BUILD_ID'
-      
+# Push image
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'push'
+    - 'us-central1-docker.pkg.dev/oval-turbine-495504-h2/mydockerregistry-aditya/python-app:$BUILD_ID'
+
 images:
-  - 'us-central1-docker.pkg.dev/oval-turbine-495504-h2/mydockerregistry-aditya/python-app:$BUILD_ID'
-logsBucket: "gs://lab1-static-site-aditya"
+- 'us-central1-docker.pkg.dev/oval-turbine-495504-h2/mydockerregistry-aditya/python-app:$BUILD_ID'
